@@ -1,36 +1,62 @@
 import * as THREE from "three"
 
-let camera, scene, renderer
-let geometry, material, mesh
+export default class Sketch {
+	constructor(options) {
+		this.time = 0
+		this.container = options.dom
 
-init()
+		//create scene
+		this.scene = new THREE.Scene()
 
-function init() {
-	camera = new THREE.PerspectiveCamera(
-		70,
-		window.innerWidth / window.innerHeight,
-		0.01,
-		10
-	)
-	camera.position.z = 1
+		//get container sizes
+		this.width = this.container.offsetWidth
+		this.height = this.container.offsetHeight
 
-	scene = new THREE.Scene()
+		//create camera
+		this.camera = new THREE.PerspectiveCamera(
+			70,
+			this.width / this.height,
+			0.01,
+			10
+		)
+		this.camera.position.z = 1
 
-	geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
-	material = new THREE.MeshNormalMaterial()
+		this.addObjects()
 
-	mesh = new THREE.Mesh(geometry, material)
-	scene.add(mesh)
+		//renderer
+		this.renderer = new THREE.WebGLRenderer({
+			antialias: true,
+		})
+		this.renderer.setSize(this.width, this.height)
+		this.container.appendChild(this.renderer.domElement)
+		//
+		this.render()
+	}
 
-	renderer = new THREE.WebGLRenderer({ antialias: true })
-	renderer.setSize(window.innerWidth, window.innerHeight)
-	renderer.setAnimationLoop(animation)
-	document.body.appendChild(renderer.domElement)
+	resize() {
+		//
+	}
+
+	addObjects() {
+		this.geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2)
+		this.material = new THREE.MeshNormalMaterial()
+
+		this.mesh = new THREE.Mesh(this.geometry, this.material)
+		this.scene.add(this.mesh)
+	}
+
+	render() {
+		//
+		this.time += 0.05
+		window.requestAnimationFrame(this.render.bind(this))
+
+		this.mesh.rotation.x = this.time / 2000
+		this.mesh.rotation.y = this.time / 1000
+
+		this.renderer.render(this.scene, this.camera)
+	}
 }
 
-function animation(time) {
-	mesh.rotation.x = time / 2000
-	mesh.rotation.y = time / 1000
-
-	renderer.render(scene, camera)
-}
+new Sketch({
+	dom: document.getElementById("container"),
+})

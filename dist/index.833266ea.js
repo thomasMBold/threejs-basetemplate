@@ -459,32 +459,55 @@ function hmrAcceptRun(bundle, id) {
 }
 
 },{}],"lzYRN":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
 var _three = require("three");
-let camera, scene, renderer;
-let geometry, material, mesh;
-init();
-function init() {
-    camera = new _three.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
-    camera.position.z = 1;
-    scene = new _three.Scene();
-    geometry = new _three.BoxGeometry(0.2, 0.2, 0.2);
-    material = new _three.MeshNormalMaterial();
-    mesh = new _three.Mesh(geometry, material);
-    scene.add(mesh);
-    renderer = new _three.WebGLRenderer({
-        antialias: true
-    });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setAnimationLoop(animation);
-    document.body.appendChild(renderer.domElement);
+class Sketch {
+    constructor(options){
+        this.time = 0;
+        this.container = options.dom;
+        //create scene
+        this.scene = new _three.Scene();
+        //get container sizes
+        this.width = this.container.offsetWidth;
+        this.height = this.container.offsetHeight;
+        //create camera
+        this.camera = new _three.PerspectiveCamera(70, this.width / this.height, 0.01, 10);
+        this.camera.position.z = 1;
+        this.addObjects();
+        //renderer
+        this.renderer = new _three.WebGLRenderer({
+            antialias: true
+        });
+        this.renderer.setSize(this.width, this.height);
+        this.container.appendChild(this.renderer.domElement);
+        //
+        this.render();
+    }
+    resize() {
+    //
+    }
+    addObjects() {
+        this.geometry = new _three.BoxGeometry(0.2, 0.2, 0.2);
+        this.material = new _three.MeshNormalMaterial();
+        this.mesh = new _three.Mesh(this.geometry, this.material);
+        this.scene.add(this.mesh);
+    }
+    render() {
+        //
+        this.time += 0.05;
+        window.requestAnimationFrame(this.render.bind(this));
+        this.mesh.rotation.x = this.time / 2000;
+        this.mesh.rotation.y = this.time / 1000;
+        this.renderer.render(this.scene, this.camera);
+    }
 }
-function animation(time) {
-    mesh.rotation.x = time / 2000;
-    mesh.rotation.y = time / 1000;
-    renderer.render(scene, camera);
-}
+exports.default = Sketch;
+new Sketch({
+    dom: document.getElementById("container")
+});
 
-},{"three":"64dkv"}],"64dkv":[function(require,module,exports) {
+},{"three":"64dkv","@parcel/transformer-js/src/esmodule-helpers.js":"6qbN3"}],"64dkv":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "ACESFilmicToneMapping", ()=>ACESFilmicToneMapping
